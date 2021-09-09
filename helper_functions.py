@@ -111,48 +111,48 @@ def train_model(model, train_dataloader, val_dataloader, epochs, my_loss, optimi
                 acc = np.sum(train_acc['correct'][-1000:]) / np.sum(train_acc['total'][-1000:]) * 100
                 print('Epoch %d: Minibatch %d . Over 1000 minibatch mean Loss: %5.3f accuracy: %5.3f'%(epoch+1, i, mean_loss, acc))
 
-    mean_loss = np.average(train_losses)
-    acc = np.sum(train_acc['correct']) / np.sum(train_acc['total']) * 100
-    avg_train_losses.append(mean_loss)
-    avg_train_acc.append(acc)
+        mean_loss = np.average(train_losses)
+        acc = np.sum(train_acc['correct']) / np.sum(train_acc['total']) * 100
+        avg_train_losses.append(mean_loss)
+        avg_train_acc.append(acc)
 
-    print('Epoch %d: Training Mean loss: %5.3f and Accuracy: %5.3f'%(epoch+1, mean_loss, acc))
+        print('Epoch %d: Training Mean loss: %5.3f and Accuracy: %5.3f'%(epoch+1, mean_loss, acc))
 
-    model.eval()
-    for inputs, label in val_dataloader:
-        inputs, label = inputs.to(device), label.to(device)
+        model.eval()
+        for inputs, label in val_dataloader:
+            inputs, label = inputs.to(device), label.to(device)
 
-        with torch.no_grad():
-            outputs = model(inputs)
-            loss = my_loss(outputs, label)
-            val_losses.append(loss.item())
+            with torch.no_grad():
+                outputs = model(inputs)
+                loss = my_loss(outputs, label)
+                val_losses.append(loss.item())
 
-        _, predicted = torch.max(outputs.data, 1)
-        val_acc['correct'].append((predicted == label).sum().item())
-        val_acc['total'].append(label.size(0))
+            _, predicted = torch.max(outputs.data, 1)
+            val_acc['correct'].append((predicted == label).sum().item())
+            val_acc['total'].append(label.size(0))
 
-    mean_val_loss = np.average(val_losses)
-    acc = np.sum(val_acc['correct']) / np.sum(val_acc['total']) * 100
-    avg_val_losses.append(mean_val_loss)
-    avg_val_acc.append(acc)
+        mean_val_loss = np.average(val_losses)
+        acc = np.sum(val_acc['correct']) / np.sum(val_acc['total']) * 100
+        avg_val_losses.append(mean_val_loss)
+        avg_val_acc.append(acc)
 
-    print('Epoch %d: Validation Mean loss: %5.3f and Accuracy: %5.3f'%(epoch+1, mean_val_loss, acc))
+        print('Epoch %d: Validation Mean loss: %5.3f and Accuracy: %5.3f'%(epoch+1, mean_val_loss, acc))
 
-    train_losses = []
-    val_losses = []
+        train_losses = []
+        val_losses = []
 
-    train_acc = {'correct':[], 'total':[]}
-    val_acc = {'correct':[], 'total':[]}
+        train_acc = {'correct':[], 'total':[]}
+        val_acc = {'correct':[], 'total':[]}
 
-    scheduler.step(mean_val_loss)
+        scheduler.step(mean_val_loss)
 
-    early_stopping(mean_val_loss, model)
-        
-    if early_stopping.early_stop:
-        print("Early stopping")
-        break
+        early_stopping(mean_val_loss, model)
+            
+        if early_stopping.early_stop:
+            print("Early stopping")
+            break
 
-    model.load_state_dict(torch.load('checkpoint.pt'))
+        model.load_state_dict(torch.load('checkpoint.pt'))
 
     return model, avg_train_losses, avg_val_losses, avg_train_acc, avg_val_acc
 
