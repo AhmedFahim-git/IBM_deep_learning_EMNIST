@@ -90,26 +90,26 @@ def train_model(model, train_dataloader, val_dataloader, epochs, my_loss, optimi
 
     for epoch in range(epochs):
 
-    model.train()
-    for i, data in enumerate(train_dataloader, 1):
-        inputs, label = data
-        inputs, label = inputs.to(device), label.to(device)
+        model.train()
+        for i, data in enumerate(train_dataloader, 1):
+            inputs, label = data
+            inputs, label = inputs.to(device), label.to(device)
 
-        optimizer.zero_grad()
-        outputs = model(inputs)
-        loss = my_loss(outputs, label)
-        loss.backward()
-        optimizer.step()
-        train_losses.append(loss.item())
+            optimizer.zero_grad()
+            outputs = model(inputs)
+            loss = my_loss(outputs, label)
+            loss.backward()
+            optimizer.step()
+            train_losses.append(loss.item())
 
-        _, predicted = torch.max(outputs.data, 1)
-        train_acc['correct'].append((predicted == label).sum().item())
-        train_acc['total'].append(label.size(0))
+            _, predicted = torch.max(outputs.data, 1)
+            train_acc['correct'].append((predicted == label).sum().item())
+            train_acc['total'].append(label.size(0))
 
-        if i % 1000 ==0:
-            mean_loss = np.average(train_losses[-1000:])
-            acc = np.sum(train_acc['correct'][-1000:]) / np.sum(train_acc['total'][-1000:]) * 100
-            print('Epoch %d: Minibatch %d . Over 1000 minibatch mean Loss: %5.3f accuracy: %5.3f'%(epoch+1, i, mean_loss, acc))
+            if i % 1000 ==0:
+                mean_loss = np.average(train_losses[-1000:])
+                acc = np.sum(train_acc['correct'][-1000:]) / np.sum(train_acc['total'][-1000:]) * 100
+                print('Epoch %d: Minibatch %d . Over 1000 minibatch mean Loss: %5.3f accuracy: %5.3f'%(epoch+1, i, mean_loss, acc))
 
     mean_loss = np.average(train_losses)
     acc = np.sum(train_acc['correct']) / np.sum(train_acc['total']) * 100
