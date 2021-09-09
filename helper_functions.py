@@ -1,3 +1,12 @@
+def transform_image(x):
+    x = torch.rot90(x, 3, (0,1))
+    x = torch.fliplr(x)
+    return x
+
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+
+
 from sklearn.model_selection import train_test_split
 
 batch_size = 128
